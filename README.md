@@ -7,7 +7,7 @@ License: MIT
 
 Inspired by [wav2json](https://github.com/beschulz/wav2json), but just a little different.
 
-**note**: py-wav2json depends on NumPy and SciPy
+**note**: py-wav2json depends on [NumPy](http://www.numpy.org/) and [SciPy](https://www.scipy.org/)
 
 # Examples
     python wav2json.py -i track.wav
