@@ -121,7 +121,8 @@ if __name__ == "__main__":
     SR, data = scipy.io.wavfile.read(args.ifile)
     if(data.ndim==1):                            #if the numpy array is 1D,it converts into a 2D numpy array. 
         data = numpy.reshape(data, (-1, 2))       
-    M, numChannels = data.shape                     # nr. of samples in input
+    else:
+        M, numChannels = data.shape                     # nr. of samples in input
 
     # convert fixed point audio data to floating point range -1. to 1.
     if data.dtype == 'int16':
