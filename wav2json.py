@@ -2,7 +2,7 @@
 
 """Generate json representations of audio files.
 
-Simple Python script that computes a json data representation of a single
+Simple Python 3 script that computes a json data representation of a single
 wavefor by first taking the average of the N-channels of the input and then
 using linear interpolation to shrink/expand the original audio data to the
 requested number of output samples.
@@ -44,7 +44,7 @@ def parseArgs():
     def check_precision_range(prec_range):
         class Action(argparse.Action):
             def __call__(self, parser, namespace, prec, option_string=None):
-                if prec not in xrange(*prec_range):
+                if prec not in range(*prec_range):
                     option_string = '({})'.format(option_string) if \
                         option_string else ''
                     parser.error(
@@ -115,11 +115,16 @@ def lin2log(val):
         db *= -1
     return db
 
+
 if __name__ == "__main__":
     args = parseArgs()
     N = args.samples                                # nr. of samples in output
     SR, data = scipy.io.wavfile.read(args.ifile)
-    M, numChannels = data.shape                     # nr. of samples in input
+
+    if data.ndim == 1:
+        M, numChannels = data.size, 1
+    else:
+        M, numChannels = data.shape
 
     # convert fixed point audio data to floating point range -1. to 1.
     if data.dtype == 'int16':
@@ -130,13 +135,13 @@ if __name__ == "__main__":
     # Get nr. of samples of waveform data from the input (note: this is NOT \
     # the way to do proper audio resampling, but will do for visualization \
     # purposes)
-    data = data.T
     if numChannels > 1:
+        data = data.T
         x = numpy.arange(0, M, float(M) / N)
         xp = numpy.arange(M)
         out = numpy.zeros((numChannels, x.size))
         # First interpolate all individuals channels
-        for n in xrange(numChannels):
+        for n in range(numChannels):
             out[n, :] = numpy.interp(x, xp, data[n, :])
         # Then compute average of n channels
         out = numpy.sum(out, 0) / numChannels
@@ -146,7 +151,7 @@ if __name__ == "__main__":
         )
 
     if args.logarithmic:
-        for i in xrange(len(out)):
+        for i in range(len(out)):
             out[i] = lin2log(out[i])
 
     if args.normalize:
@@ -164,4 +169,4 @@ if __name__ == "__main__":
             }, outfile
         )
 
-    print "JSON file written to disk"
+    print("JSON file written to disk.")
